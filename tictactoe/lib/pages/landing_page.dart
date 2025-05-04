@@ -13,14 +13,85 @@ class _LandingPageState extends State<LandingPage> {
   static var customFontWhite = GoogleFonts.coiny(
     textStyle: TextStyle(color: Colors.white, fontSize: 35, letterSpacing: 3),
   );
+  static var customFontBlack = GoogleFonts.coiny(
+    textStyle: TextStyle(color: Colors.black, fontSize: 20, letterSpacing: 3),
+  );
   bool oturn = true;
   List<String> displayXO = ['', '', '', '', '', '', '', '', ''];
   String results = '';
+
+  List<int> winningindexes = [];
 
   int oScore = 0;
   int xScore = 0;
   int filledboxes = 0;
   bool winnerfound = false;
+
+  String playerX = '';
+  String playerO = '';
+  bool playername = false;
+
+  final TextEditingController playerXController = TextEditingController();
+  final TextEditingController playerOController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      playerNameDialog();
+    });
+  }
+
+  void playerNameDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (_) => AlertDialog(
+            backgroundColor: Appcolor.primaryColor,
+            title: Text('Enter Player Names', style: customFontWhite),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: playerXController,
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Player X',
+                    labelStyle: TextStyle(color: Colors.white),
+                  ),
+                ),
+                TextField(
+                  controller: playerOController,
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Player O',
+                    labelStyle: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+                onPressed: () {
+                  if (playerXController.text.isNotEmpty &&
+                      playerOController.text.isNotEmpty) {
+                    setState(() {
+                      playerX = playerXController.text;
+                      playerO = playerOController.text;
+                      playername = true;
+                    });
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: Text('Start Game', style: customFontBlack),
+              ),
+            ],
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +108,10 @@ class _LandingPageState extends State<LandingPage> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text('Player X', style: customFontWhite),
+                      Text(
+                        playerX.isEmpty ? 'Player X' : playerX,
+                        style: customFontWhite,
+                      ),
                       Text(xScore.toString(), style: customFontWhite),
                     ],
                   ),
@@ -45,7 +119,10 @@ class _LandingPageState extends State<LandingPage> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text('Player O', style: customFontWhite),
+                      Text(
+                        playerO.isEmpty ? 'Player O' : playerO,
+                        style: customFontWhite,
+                      ),
                       Text(oScore.toString(), style: customFontWhite),
                     ],
                   ),
@@ -62,11 +139,18 @@ class _LandingPageState extends State<LandingPage> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      tapped(index);
+                      if (playername)
+                        // ignore: curly_braces_in_flow_control_structures
+                        tapped(index);
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Appcolor.secondaryColor,
+                        color:
+                            winningindexes.contains(index)
+                                ? Colors
+                                    .greenAccent // Highlight winning cells
+                                : Appcolor.secondaryColor,
+
                         borderRadius: BorderRadius.circular(15),
                         border: Border.all(
                           width: 5,
@@ -120,7 +204,10 @@ class _LandingPageState extends State<LandingPage> {
                     IconButton(
                       iconSize: 50,
                       color: Colors.white,
-                      onPressed: resetscore,
+                      onPressed: () {
+                        resetscore();
+                        clearboard();
+                      },
                       icon: Icon(Icons.restart_alt_rounded),
                     ),
                   ],
@@ -134,14 +221,20 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   void tapped(int index) {
-    if (displayXO[index] != '' || winnerfound) return;
+    if (displayXO[index] != '' || winnerfound) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Invalid move")));
+      return;
+    }
+
     setState(() {
       // ignore: unrelated_type_equality_checks
       if (oturn && displayXO[index] == '') {
-        displayXO[index] = 'X';
+        displayXO[index] = 'O';
         filledboxes++;
       } else if (!oturn && displayXO[index] == '') {
-        displayXO[index] = 'O';
+        displayXO[index] = 'X';
         filledboxes++;
       }
 
@@ -151,12 +244,14 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   void checkwinner() {
+    winningindexes.clear();
     //1st Row
     if (displayXO[0] == displayXO[1] &&
         displayXO[0] == displayXO[2] &&
         displayXO[0] != '') {
       setState(() {
-        results = 'Player${displayXO[0]}Wins!';
+        winningindexes = [0, 1, 2];
+        results = 'Player ${displayXO[0]} Wins!';
         updateScore(displayXO[0]);
       });
     }
@@ -165,7 +260,8 @@ class _LandingPageState extends State<LandingPage> {
         displayXO[3] == displayXO[5] &&
         displayXO[3] != '') {
       setState(() {
-        results = 'Player${displayXO[3]}Wins!';
+        winningindexes = [3, 4, 5];
+        results = 'Player ${displayXO[3]} Wins!';
         updateScore(displayXO[3]);
       });
     }
@@ -174,6 +270,7 @@ class _LandingPageState extends State<LandingPage> {
         displayXO[6] == displayXO[8] &&
         displayXO[6] != '') {
       setState(() {
+        winningindexes = [6, 7, 8];
         results = 'Player${displayXO[6]}Wins!';
         updateScore(displayXO[6]);
       });
@@ -183,7 +280,8 @@ class _LandingPageState extends State<LandingPage> {
         displayXO[0] == displayXO[6] &&
         displayXO[0] != '') {
       setState(() {
-        results = 'Player${displayXO[0]}Wins!';
+        winningindexes = [0, 3, 6];
+        results = 'Player ${displayXO[0]} Wins!';
         updateScore(displayXO[0]);
       });
     }
@@ -192,7 +290,8 @@ class _LandingPageState extends State<LandingPage> {
         displayXO[1] == displayXO[7] &&
         displayXO[1] != '') {
       setState(() {
-        results = 'Player${displayXO[1]}Wins!';
+        winningindexes = [1, 4, 7];
+        results = 'Player ${displayXO[1]} Wins!';
         updateScore(displayXO[1]);
       });
     }
@@ -201,7 +300,8 @@ class _LandingPageState extends State<LandingPage> {
         displayXO[2] == displayXO[8] &&
         displayXO[2] != '') {
       setState(() {
-        results = 'Player${displayXO[2]}Wins!';
+        winningindexes = [2, 5, 8];
+        results = 'Player ${displayXO[2]} Wins!';
         updateScore(displayXO[2]);
       });
     }
@@ -210,7 +310,8 @@ class _LandingPageState extends State<LandingPage> {
         displayXO[0] == displayXO[8] &&
         displayXO[0] != '') {
       setState(() {
-        results = 'Player${displayXO[0]}Wins!';
+        winningindexes = [0, 4, 8];
+        results = 'Player ${displayXO[0]}Wins!';
         updateScore(displayXO[0]);
       });
     }
@@ -219,6 +320,7 @@ class _LandingPageState extends State<LandingPage> {
         displayXO[6] == displayXO[2] &&
         displayXO[6] != '') {
       setState(() {
+        winningindexes = [6, 4, 2];
         results = 'Player${displayXO[6]}Wins!';
         updateScore(displayXO[6]);
       });
@@ -247,6 +349,7 @@ class _LandingPageState extends State<LandingPage> {
       results = '';
       filledboxes = 0;
       winnerfound = false;
+      winningindexes.clear();
     });
   }
 
@@ -254,6 +357,7 @@ class _LandingPageState extends State<LandingPage> {
     setState(() {
       xScore = 0;
       oScore = 0;
+      winningindexes.clear();
     });
   }
 }
