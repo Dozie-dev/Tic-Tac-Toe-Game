@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tictactoe/colors/color.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -10,12 +11,26 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
+  // The custom font through out the app
   static var customFontWhite = GoogleFonts.coiny(
     textStyle: TextStyle(color: Colors.white, fontSize: 35, letterSpacing: 3),
   );
-  static var customFontBlack = GoogleFonts.coiny(
-    textStyle: TextStyle(color: Colors.black, fontSize: 20, letterSpacing: 3),
-  );
+  // static var customFontBlack = GoogleFonts.coiny(
+  //   textStyle: TextStyle(color: Colors.black, fontSize: 20, letterSpacing: 3),
+  //);
+
+  // Function to call the music
+  void playMusic() async {
+    await audioplayer.setReleaseMode(ReleaseMode.loop); // Loop the music
+    await audioplayer.play(AssetSource('audio/backgroundsound.flac'));
+  }
+
+  @override
+  void dispose() {
+    audioplayer.dispose();
+    super.dispose();
+  }
+
   bool oturn = true;
   List<String> displayXO = ['', '', '', '', '', '', '', '', ''];
   String results = '';
@@ -31,66 +46,201 @@ class _LandingPageState extends State<LandingPage> {
   String playerO = '';
   bool playername = false;
 
+  bool isPlaying = true;
+
   final TextEditingController playerXController = TextEditingController();
   final TextEditingController playerOController = TextEditingController();
+
+  late AudioPlayer audioplayer;
+  // Volume variable
+  double volume = 1.0;
 
   @override
   void initState() {
     super.initState();
+    audioplayer = AudioPlayer();
+    playMusic();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       playerNameDialog();
     });
   }
 
+  void toggleMusic() {
+    if (isPlaying) {
+      audioplayer.pause();
+    } else {
+      audioplayer.resume();
+    }
+    setState(() {
+      isPlaying = !isPlaying;
+    });
+  }
+
+  //Method to update volume
+  void changevolume(double newvolume) {
+    setState(() {
+      volume = newvolume;
+    });
+    audioplayer.setVolume(volume);
+  }
+
   void playerNameDialog() {
     showDialog(
       context: context,
-      barrierDismissible: false,
-      builder:
-          (_) => AlertDialog(
-            backgroundColor: Appcolor.primaryColor,
-            title: Text('Enter Player Names', style: customFontWhite),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: playerXController,
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    labelText: 'Player X',
-                    labelStyle: TextStyle(color: Colors.white),
-                  ),
-                ),
-                TextField(
-                  controller: playerOController,
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    labelText: 'Player O',
-                    labelStyle: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
-                onPressed: () {
-                  if (playerXController.text.isNotEmpty &&
-                      playerOController.text.isNotEmpty) {
-                    setState(() {
-                      playerX = playerXController.text;
-                      playerO = playerOController.text;
-                      playername = true;
-                    });
-                    Navigator.of(context).pop();
-                  }
-                },
-                child: Text('Start Game', style: customFontBlack),
-              ),
-            ],
+      barrierDismissible: false, // Prevent dismissal without submitting
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
+          backgroundColor: Appcolor.primaryColor,
+
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.8,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Enter Player Names",
+                          style: GoogleFonts.coiny(
+                            textStyle: TextStyle(
+                              fontSize: 24,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextField(
+                          controller: playerXController,
+                          decoration: InputDecoration(
+                            labelText: 'Player X',
+                            labelStyle: TextStyle(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 15),
+                        TextField(
+                          controller: playerOController,
+                          decoration: InputDecoration(
+                            labelText: 'Player O',
+                            labelStyle: TextStyle(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        const SizedBox(height: 25),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Appcolor.primaryColor,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () {
+                            final xName = playerXController.text.trim();
+                            final oName = playerOController.text.trim();
+                            if (xName.isNotEmpty && oName.isNotEmpty) {
+                              Navigator.of(context).pop();
+                              setState(() {
+                                playerX = playerXController.text;
+                                playerO = playerOController.text;
+                                playername = true;
+                              });
+                            }
+                          },
+                          child: Text(
+                            "Start Game",
+                            style: GoogleFonts.coiny(fontSize: 20),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
+
+  // void playerNameDialog() {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder:
+  //         (_) => AlertDialog(
+  //           backgroundColor: Appcolor.primaryColor,
+  //           title: Text('Enter Player Names', style: customFontWhite),
+  //           content: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               TextField(
+  //                 controller: playerXController,
+  //                 style: TextStyle(color: Colors.white),
+  //                 decoration: InputDecoration(
+  //                   labelText: 'Player X',
+  //                   labelStyle: TextStyle(color: Colors.white),
+  //                 ),
+  //               ),
+  //               TextField(
+  //                 controller: playerOController,
+  //                 style: TextStyle(color: Colors.white),
+  //                 decoration: InputDecoration(
+  //                   labelText: 'Player O',
+  //                   labelStyle: TextStyle(color: Colors.white),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //           actions: [
+  //             ElevatedButton(
+  //               style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+  //               onPressed: () {
+  //                 if (playerXController.text.isNotEmpty &&
+  //                     playerOController.text.isNotEmpty) {
+  //                   setState(() {
+  //                     playerX = playerXController.text;
+  //                     playerO = playerOController.text;
+  //                     playername = true;
+  //                   });
+  //                   Navigator.of(context).pop();
+  //                 }
+  //               },
+  //               child: Text('Start Game', style: customFontBlack),
+  //             ),
+  //           ],
+  //         ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -201,14 +351,38 @@ class _LandingPageState extends State<LandingPage> {
                       ),
                     ),
                     SizedBox(height: 30),
-                    IconButton(
-                      iconSize: 50,
-                      color: Colors.white,
-                      onPressed: () {
-                        resetscore();
-                        clearboard();
-                      },
-                      icon: Icon(Icons.restart_alt_rounded),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          iconSize: 50,
+                          color: Colors.white,
+                          onPressed: () {
+                            resetscore();
+                            clearboard();
+                          },
+                          icon: Icon(Icons.restart_alt_rounded),
+                        ),
+                        IconButton(
+                          iconSize: 50,
+                          color: Colors.white,
+                          onPressed: toggleMusic,
+                          icon: Icon(
+                            isPlaying
+                                ? Icons.volume_up_rounded
+                                : Icons.volume_off_rounded,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Slider(
+                      value: volume,
+                      onChanged: changevolume,
+                      min: 0.0,
+                      max: 1.0,
+
+                      activeColor: Colors.white,
+                      inactiveColor: Colors.grey,
                     ),
                   ],
                 ),
