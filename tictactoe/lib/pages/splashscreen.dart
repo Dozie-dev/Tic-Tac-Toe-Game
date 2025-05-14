@@ -14,7 +14,7 @@ class Splashscreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Future.delayed(Duration(seconds: 3), () {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LandingPage()),
+        MaterialPageRoute(builder: (context) => FirstPage()),
         (route) => false,
       );
     });
