@@ -34,7 +34,11 @@ class FirstPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 70),
+
+                Transform.rotate(
+                  angle: 0.1,
+                  child: Image.asset('assets/images/tictactoe.png', width: 300),
+                ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
