@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tictactoe/colors/color.dart';
-import 'package:tictactoe/pages/landing_page.dart';
+import 'package:tictactoe/pages/first_screens/landing_page.dart';
 
 class Splashscreen extends StatelessWidget {
   const Splashscreen({super.key});
