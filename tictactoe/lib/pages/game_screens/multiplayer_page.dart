@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tictactoe/colors/color.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tictactoe/pages/user_auth/profile.dart';
 
 class MultiplayerPage extends StatefulWidget {
   const MultiplayerPage({super.key});
@@ -19,7 +20,22 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Appcolor.accentMulti,
-      body: Center(child: Text('Coming Soon', style: customfontwhite)),
+      body: SafeArea(
+        child: Column(
+          children: [
+            IconButton.filled(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                );
+              },
+              icon: Icon(Icons.person_2),
+            ),
+            Center(child: Text('Coming Soon', style: customfontwhite)),
+          ],
+        ),
+      ),
     );
   }
 }

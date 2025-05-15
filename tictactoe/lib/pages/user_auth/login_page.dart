@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tictactoe/colors/color.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tictactoe/pages/game_screens/multiplayer_page.dart';
+import 'package:tictactoe/pages/user_auth/forgot_password.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -144,12 +146,19 @@ class _LoginPageState extends State<LoginPage> {
                           minimumSize: Size(0, 0),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ForgotPassword(),
+                            ),
+                          );
+                        },
                         child: Text(
                           'Forgot Password?',
                           style: GoogleFonts.coiny(
                             textStyle: TextStyle(
-                              color: Colors.black,
+                              color: Colors.red,
                               fontSize: 18,
                             ),
                           ),
@@ -164,7 +173,14 @@ class _LoginPageState extends State<LoginPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Appcolor.primaryColor,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MultiplayerPage(),
+                            ),
+                          );
+                        },
                         child: Padding(
                           padding: const EdgeInsets.only(
                             top: 15,
