@@ -74,7 +74,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   ],
                 ),
                 child: TextFormField(
-                  decoration: InputDecoration(border: InputBorder.none),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                  ),
+                  style: GoogleFonts.coiny(color: Colors.black, fontSize: 25),
                   validator:
                       (value) =>
                           value == null || value.isEmpty

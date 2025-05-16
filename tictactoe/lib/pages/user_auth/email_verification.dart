@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:tictactoe/colors/color.dart';
+import 'package:tictactoe/pages/user_auth/login_page.dart';
 
 class EmailVerification extends StatefulWidget {
   const EmailVerification({super.key});
@@ -108,7 +109,12 @@ class _EmailVerificationState extends State<EmailVerification> {
                     ),
                     backgroundColor: Appcolor.primaryColor,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
+                  },
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 10),
                     child: Text(

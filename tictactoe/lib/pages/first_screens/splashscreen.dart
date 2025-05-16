@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tictactoe/colors/color.dart';
 import 'package:tictactoe/pages/first_screens/landing_page.dart';
+import 'package:tictactoe/pages/first_screens/welcome_page.dart';
 
-class Splashscreen extends StatelessWidget {
+class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
 
   static var customFontWhite = GoogleFonts.coiny(
@@ -11,18 +13,49 @@ class Splashscreen extends StatelessWidget {
   );
 
   @override
+  State<Splashscreen> createState() => _SplashscreenState();
+}
+
+class _SplashscreenState extends State<Splashscreen> {
+  @override
+  void initState() {
+    super.initState();
+    _checkUserData();
+  }
+
+  void _checkUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final hasDisplayName =
+        user?.displayName != null && user!.displayName!.isNotEmpty;
+
+    if (hasDisplayName) {
+      Future.delayed(Duration(seconds: 4), () {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => FirstPage()),
+          (route) => false,
+        );
+      });
+    } else {
+      Future.delayed(Duration(seconds: 4), () {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => WelcomePage()),
+          (route) => false,
+        );
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 3), () {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => FirstPage()),
-        (route) => false,
-      );
-    });
     return Scaffold(
       backgroundColor: Appcolor.primaryColor,
       body: Stack(
         children: [
-          Center(child: Text('Tic-Tac-Toe Game', style: customFontWhite)),
+          Center(
+            child: Text(
+              'Tic-Tac-Toe Game',
+              style: Splashscreen.customFontWhite,
+            ),
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(

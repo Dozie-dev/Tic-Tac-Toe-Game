@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tictactoe/colors/color.dart';
+import 'package:tictactoe/pages/firebase_auth/auth_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -10,6 +12,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfileState extends State<ProfilePage> {
+  String? displayName = FirebaseAuth.instance.currentUser?.displayName;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +42,7 @@ class _ProfileState extends State<ProfilePage> {
                 children: [
                   Image.asset('assets/images/profilepic.png', width: 300),
                   Text(
-                    'Username',
+                    'Hi $displayName',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.coiny(color: Colors.black, fontSize: 30),
                   ),
@@ -113,7 +117,76 @@ class _ProfileState extends State<ProfilePage> {
                   ),
                   backgroundColor: Colors.red,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(
+                          'Confirm Logout',
+                          style: GoogleFonts.coiny(
+                            textStyle: TextStyle(
+                              color: Appcolor.primaryColor,
+                              fontSize: 25,
+                            ),
+                          ),
+                        ),
+                        content: Text(
+                          'Are You Sure You Want To Logout?',
+                          textAlign: TextAlign.left,
+                          style: GoogleFonts.coiny(
+                            textStyle: TextStyle(
+                              color: Appcolor.primaryColor,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                        actions: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () async {
+                                  Navigator.of(context).pop(); //
+                                  await authService.value.signOut(); //
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    '/welcome',
+                                  ); //
+                                },
+                                child: Text(
+                                  'Logout',
+                                  style: GoogleFonts.coiny(
+                                    textStyle: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 25,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(
+                                    context,
+                                  ).pop(); // Close the dialog
+                                },
+                                child: Text(
+                                  'Cancel',
+                                  style: GoogleFonts.coiny(
+                                    textStyle: TextStyle(
+                                      color: Appcolor.primaryColor,
+                                      fontSize: 25,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: Text(

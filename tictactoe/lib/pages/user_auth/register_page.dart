@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tictactoe/colors/color.dart';
+import 'package:tictactoe/pages/firebase_auth/auth_service.dart';
 import 'package:tictactoe/pages/user_auth/email_verification.dart';
-import 'package:tictactoe/pages/user_auth/login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -12,6 +13,20 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  String errorMessage = '';
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    usernameController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,218 +44,244 @@ class _RegisterPageState extends State<RegisterPage> {
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(50)),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'REGISTER USER',
-                style: GoogleFonts.coiny(
-                  textStyle: TextStyle(
-                    color: Appcolor.primaryColor,
-                    letterSpacing: 1,
-                    fontSize: 40,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'REGISTER USER',
+                  style: GoogleFonts.coiny(
+                    textStyle: TextStyle(
+                      color: Appcolor.primaryColor,
+                      letterSpacing: 1,
+                      fontSize: 40,
+                    ),
                   ),
                 ),
-              ),
-              Text(
-                'Tic-Tac-Toe Game Auth',
-                style: GoogleFonts.coiny(
-                  textStyle: TextStyle(
-                    color: Appcolor.primaryColor,
-                    letterSpacing: 1,
-                    fontSize: 20,
+                Text(
+                  'Tic-Tac-Toe Game Auth',
+                  style: GoogleFonts.coiny(
+                    textStyle: TextStyle(
+                      color: Appcolor.primaryColor,
+                      letterSpacing: 1,
+                      fontSize: 20,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 20),
-              SizedBox(
-                width: 300,
-                child: Column(
-                  children: [
-                    // Username Field
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          'Username',
-                          style: GoogleFonts.coiny(
-                            textStyle: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black54,
-                            blurRadius: 20,
-                            offset: Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: TextFormField(
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator:
-                            (value) =>
-                                value == null || value.isEmpty
-                                    ? 'Enter your username'
-                                    : null,
-                      ),
-                    ),
-
-                    // Email Field
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          'Email',
-                          style: GoogleFonts.coiny(
-                            textStyle: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black54,
-                            blurRadius: 20,
-                            offset: Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: TextFormField(
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator:
-                            (value) =>
-                                value == null || value.isEmpty
-                                    ? 'Enter your email'
-                                    : null,
-                      ),
-                    ),
-
-                    //Password Field
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          'Password',
-                          style: GoogleFonts.coiny(
-                            textStyle: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black54,
-                            blurRadius: 20,
-                            offset: Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: TextFormField(
-                        decoration: InputDecoration(border: InputBorder.none),
-                        validator:
-                            (value) =>
-                                value == null || value.isEmpty
-                                    ? 'Enter your password'
-                                    : null,
-                      ),
-                    ),
-                    SizedBox(height: 50),
-
-                    SizedBox(
-                      width: 300,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          backgroundColor: Appcolor.primaryColor,
-                        ),
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EmailVerification(),
-                            ),
-                          );
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
+                SizedBox(height: 20),
+                SizedBox(
+                  width: 300,
+                  child: Column(
+                    children: [
+                      //-- Username Field
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Align(
+                          alignment: Alignment.topLeft,
                           child: Text(
-                            'VERIFY EMAIL',
+                            'Username',
                             style: GoogleFonts.coiny(
                               textStyle: TextStyle(
-                                color: Colors.white,
-                                fontSize: 30,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 30),
-
-                    SizedBox(
-                      width: 300,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          backgroundColor: Appcolor.primaryColor,
-                        ),
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginPage(),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black54,
+                              blurRadius: 20,
+                              offset: Offset(0, 10),
                             ),
-                          );
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller: usernameController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                            ),
+                          ),
+                          style: GoogleFonts.coiny(
+                            color: Colors.black,
+                            fontSize: 25,
+                          ),
+                          validator:
+                              (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Enter your username'
+                                      : null,
+                        ),
+                      ),
+
+                      //-- Email Field
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Align(
+                          alignment: Alignment.topLeft,
                           child: Text(
-                            'REGISTER',
+                            'Email',
                             style: GoogleFonts.coiny(
                               textStyle: TextStyle(
-                                color: Colors.white,
-                                fontSize: 30,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black54,
+                              blurRadius: 20,
+                              offset: Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller: emailController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                            ),
+                          ),
+                          style: GoogleFonts.coiny(
+                            color: Colors.black,
+                            fontSize: 25,
+                          ),
+                          validator:
+                              (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Enter your email'
+                                      : null,
+                        ),
+                      ),
+
+                      //-- Password Field
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            'Password',
+                            style: GoogleFonts.coiny(
+                              textStyle: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black54,
+                              blurRadius: 20,
+                              offset: Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller: passwordController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                            ),
+                          ),
+                          style: GoogleFonts.coiny(
+                            color: Colors.black,
+                            fontSize: 25,
+                          ),
+                          validator:
+                              (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Enter your password'
+                                      : null,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        errorMessage,
+                        style: GoogleFonts.coiny(
+                          textStyle: TextStyle(
+                            color: Colors.redAccent,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 50),
+
+                      SizedBox(
+                        width: 300,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            backgroundColor: Appcolor.primaryColor,
+                          ),
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              try {
+                                await authService.value.createAccount(
+                                  email: emailController.text,
+                                  password: passwordController.text,
+                                );
+                                await authService.value.updateUsername(
+                                  username: usernameController.text,
+                                );
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EmailVerification(),
+                                  ),
+                                );
+                              } on FirebaseAuthException catch (e) {
+                                setState(() {
+                                  errorMessage =
+                                      e.message ?? 'There is an error';
+                                });
+                              }
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Text(
+                              'SIGN UP',
+                              style: GoogleFonts.coiny(
+                                textStyle: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 30,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
