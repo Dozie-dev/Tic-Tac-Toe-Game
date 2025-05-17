@@ -168,6 +168,22 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
               ],
             ),
           ),
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Text(
+              textAlign: TextAlign.center,
+              'DOZIE TECHNOLOGIES',
+              style: GoogleFonts.coiny(
+                textStyle: TextStyle(
+                  color: Colors.white,
+                  letterSpacing: 3,
+                  fontSize: 10,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
