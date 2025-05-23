@@ -102,7 +102,7 @@ class _CreateGameState extends State<CreateGame> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 30),
 
                         Text(
                           'Share This RoomID To Your Friend',
@@ -113,7 +113,7 @@ class _CreateGameState extends State<CreateGame> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(height: 30),
 
                         SelectableText(
                           roomId!,
@@ -124,7 +124,7 @@ class _CreateGameState extends State<CreateGame> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 30),
 
                         Text(
                           'Waiting For Player to Join...',

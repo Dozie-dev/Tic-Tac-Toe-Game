@@ -1,8 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'dart:math';
 
 final _logger = Logger('GameService');
+
+String generateRoomId({int length = 6}) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  final rand = Random.secure();
+  return List.generate(length, (_) => chars[rand.nextInt(chars.length)]).join();
+}
 
 class GameService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -10,8 +17,9 @@ class GameService {
   // Game Logic
   Future<String> createGame(String hostId) async {
     try {
-      final docRef = _firestore.collection('games').doc(); // Auto-generates ID
-      final roomId = docRef.id;
+      final roomId = generateRoomId();
+      final docRef = _firestore.collection('games').doc(roomId); // Auto-generates ID
+      
 
       await docRef.set({
         'roomId': roomId,
