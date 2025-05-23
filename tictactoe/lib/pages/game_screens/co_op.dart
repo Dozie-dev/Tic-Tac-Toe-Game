@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tictactoe/colors/color.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:tictactoe/pages/first_screens/landing_page.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -89,105 +90,138 @@ class _LandingPageState extends State<LandingPage> {
       context: context,
       barrierDismissible: false, // Prevent dismissal without submitting
       builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: Appcolor.primaryColor,
+        return PopScope(
+          canPop: false, // Disables back button
+          child: Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            backgroundColor: Appcolor.primaryColor,
 
-          child: GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(), // dismiss keyboard
-            child: SingleChildScrollView(
-              padding: EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 20,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-              ),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Enter Player Names",
-                          style: GoogleFonts.coiny(
-                            textStyle: TextStyle(
-                              fontSize: 24,
-                              color: Colors.white,
+            child: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(), // dismiss keyboard
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: 20,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Enter Player Names",
+                            style: GoogleFonts.coiny(
+                              textStyle: TextStyle(
+                                fontSize: 24,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        TextField(
-                          controller: playerXController,
-                          decoration: InputDecoration(
-                            labelText: 'Player X',
-                            labelStyle: TextStyle(color: Colors.white70),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(12),
+                          const SizedBox(height: 20),
+                          TextField(
+                            controller: playerXController,
+                            decoration: InputDecoration(
+                              labelText: 'Player X',
+                              labelStyle: TextStyle(color: Colors.white70),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(12),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          const SizedBox(height: 15),
+                          TextField(
+                            controller: playerOController,
+                            decoration: InputDecoration(
+                              labelText: 'Player O',
+                              labelStyle: TextStyle(color: Colors.white70),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          const SizedBox(height: 25),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Appcolor.primaryColor,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 30,
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: () {
+                              final xName = playerXController.text.trim();
+                              final oName = playerOController.text.trim();
+                              if (xName.isNotEmpty && oName.isNotEmpty) {
+                                Navigator.of(context).pop();
+                                setState(() {
+                                  playerX = playerXController.text;
+                                  playerO = playerOController.text;
+                                  playername = true;
+                                });
+                              }
+                            },
+                            child: Text(
+                              "Start Game",
+                              style: GoogleFonts.coiny(fontSize: 20),
                             ),
                           ),
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        const SizedBox(height: 15),
-                        TextField(
-                          controller: playerOController,
-                          decoration: InputDecoration(
-                            labelText: 'Player O',
-                            labelStyle: TextStyle(color: Colors.white70),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        const SizedBox(height: 25),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Appcolor.primaryColor,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 30,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                          SizedBox(height: 10),
+                          SizedBox(
+                            width: 160,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Appcolor.primaryColor,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 30,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => FirstPage(),
+                                  ),
+                                );
+                                audioplayer.stop();
+                              },
+                              child: Text(
+                                "Exit",
+                                style: GoogleFonts.coiny(fontSize: 20),
+                              ),
                             ),
                           ),
-                          onPressed: () {
-                            final xName = playerXController.text.trim();
-                            final oName = playerOController.text.trim();
-                            if (xName.isNotEmpty && oName.isNotEmpty) {
-                              Navigator.of(context).pop();
-                              setState(() {
-                                playerX = playerXController.text;
-                                playerO = playerOController.text;
-                                playername = true;
-                              });
-                            }
-                          },
-                          child: Text(
-                            "Start Game",
-                            style: GoogleFonts.coiny(fontSize: 20),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -260,26 +294,38 @@ class _LandingPageState extends State<LandingPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        playerX.isEmpty ? 'Player X' : playerX,
-                        style: customFontWhite,
+                  SizedBox(
+                    width: 150,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Image.asset('assets/icons/close.png', width: 40),
+                          Text(
+                            playerX.isEmpty ? 'Player X' : playerX,
+                            style: customFontWhite,
+                          ),
+                          Text(xScore.toString(), style: customFontWhite),
+                        ],
                       ),
-                      Text(xScore.toString(), style: customFontWhite),
-                    ],
+                    ),
                   ),
                   SizedBox(width: 25),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        playerO.isEmpty ? 'Player O' : playerO,
-                        style: customFontWhite,
+                  SizedBox(
+                    width: 150,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Image.asset('assets/icons/open.png', width: 40),
+                          Text(
+                            playerO.isEmpty ? 'Player O' : playerO,
+                            style: customFontWhite,
+                          ),
+                          Text(oScore.toString(), style: customFontWhite),
+                        ],
                       ),
-                      Text(oScore.toString(), style: customFontWhite),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -412,10 +458,10 @@ class _LandingPageState extends State<LandingPage> {
     setState(() {
       // ignore: unrelated_type_equality_checks
       if (oturn && displayXO[index] == '') {
-        displayXO[index] = 'O';
+        displayXO[index] = 'X';
         filledboxes++;
       } else if (!oturn && displayXO[index] == '') {
-        displayXO[index] = 'X';
+        displayXO[index] = 'O';
         filledboxes++;
       }
 

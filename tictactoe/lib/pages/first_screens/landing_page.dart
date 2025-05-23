@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tictactoe/colors/color.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tictactoe/pages/game_auth/game_lobby.dart';
 import 'package:tictactoe/pages/game_screens/co_op.dart';
-import 'package:tictactoe/pages/game_screens/multiplayer_page.dart';
 import 'package:tictactoe/pages/user_auth/profile_page.dart';
 
 class FirstPage extends StatelessWidget {
@@ -91,9 +91,7 @@ class FirstPage extends StatelessWidget {
                   onPressed: () async {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => MultiplayerPage(),
-                      ),
+                      MaterialPageRoute(builder: (context) => GameLobby()),
                     );
                   },
                   child: Text('MULTIPLAYER', style: customwhitefont),

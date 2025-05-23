@@ -45,6 +45,7 @@ class _SplashscreenState extends State<Splashscreen> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Appcolor.primaryColor,
