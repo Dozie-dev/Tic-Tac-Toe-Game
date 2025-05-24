@@ -31,6 +31,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Appcolor.primaryColor,
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           Padding(

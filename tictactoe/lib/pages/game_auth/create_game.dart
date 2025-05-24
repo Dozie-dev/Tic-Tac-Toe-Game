@@ -43,7 +43,7 @@ class _CreateGameState extends State<CreateGame> {
       if (snapshot.exists) {
         final data = snapshot.data();
         if (data != null && data['guestId'] != null) {
-          // Guest has joined, navigate to game page
+          // Guest has joined, navigate to multiplayer page
           Navigator.pushReplacementNamed(
             context,
             '/multiplayer',
