@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const AuthGate(),
         '/welcome': (context) => const WelcomePage(),
         '/creategame': (context) => const CreateGame(),
-        '/multiplayer': (context) => const MultiplayerPage(),
+        '/multiplayer': (context) => const MultiplayerPage(roomId: ''),
       },
     );
   }
