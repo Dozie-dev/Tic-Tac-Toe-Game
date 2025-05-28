@@ -24,7 +24,10 @@ class MyApp extends StatelessWidget {
         '/': (context) => const AuthGate(),
         '/welcome': (context) => const WelcomePage(),
         '/creategame': (context) => const CreateGame(),
-        '/multiplayer': (context) => const MultiplayerPage(roomId: ''),
+        '/multiplayer': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as String;
+          return MultiplayerPage(roomId: args);
+        },
       },
     );
   }

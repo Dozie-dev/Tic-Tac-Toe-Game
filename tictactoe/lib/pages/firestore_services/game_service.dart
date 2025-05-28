@@ -22,10 +22,18 @@ class GameService {
           .collection('games')
           .doc(roomId); // Auto-generates ID
 
+      // Fetch host's username from the 'users' collection
+      final userDoc = await _firestore.collection('users').doc(hostId).get();
+      final hostUsername = userDoc.data()?['username'] ?? 'Player X';
+
       await docRef.set({
         'roomId': roomId,
         'playerX': hostId,
         'playerO': null,
+        'hostScore': 0,
+        'guestScore': 0,
+        'hostUsername': hostUsername,
+        'guestUsername': '',
         'board': List.generate(9, (_) => ''),
         'currentTurn': 'X',
         'winner': '',
@@ -55,8 +63,13 @@ class GameService {
         throw Exception('Room is Full');
       }
 
+      // Fetch guest's username from the 'users' collection
+      final userDoc = await _firestore.collection('users').doc(guestId).get();
+      final guestUsername = userDoc.data()?['username'] ?? 'Player O';
+
       await docRef.update({
         'playerO': guestId,
+        'guestUsername': guestUsername,
         'joinedAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
@@ -90,13 +103,28 @@ class GameService {
     final winner = checkWinner(board);
     final isDraw = !board.contains('') && winner == '';
 
-    await docRef.update({
+    final updates = {
       'board': board,
       'currentTurn': currentTurn == 'X' ? 'O' : 'X',
       'winner': winner,
       'isDraw': isDraw,
       'isGameOver': winner != '' || isDraw,
-    });
+    };
+
+    //Update score if there is a winner
+    if (winner != '') {
+      final isHostWinner =
+          (winner == 'X' &&
+              data['playerX'] != null &&
+              data['playerX'] == data['playerX']) ||
+          (winner == 'O' &&
+              data['playerO'] != null &&
+              data['playerO'] == data['playerX']);
+
+      final scoreKey = isHostWinner ? 'hostScore' : 'guestScore';
+      updates[scoreKey] = (data[scoreKey] ?? 0) + 1;
+    }
+    await docRef.update(updates);
   }
 
   // Reset Game Board
@@ -107,6 +135,19 @@ class GameService {
       'winner': '',
       'isDraw': false,
       'isGameOver': false,
+    });
+  }
+
+  // Restart Game Board
+  Future<void> restartGame(String roomId) async {
+    await _firestore.collection('games').doc(roomId).update({
+      'board': List.generate(9, (_) => ''),
+      'currentTurn': 'X',
+      'winner': '',
+      'isDraw': false,
+      'isGameOver': false,
+      'hostScore': 0,
+      'guestScore': 0,
     });
   }
 

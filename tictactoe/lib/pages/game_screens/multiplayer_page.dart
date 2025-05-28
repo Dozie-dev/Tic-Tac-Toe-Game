@@ -36,13 +36,19 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
 
   Future<void> _loadUsernames(String hostId, String guestId) async {
     final hostDoc =
-        await FirebaseFirestore.instance.collection('games').doc(hostId).get();
+        await FirebaseFirestore.instance.collection('users').doc(hostId).get();
     final guestDoc =
-        await FirebaseFirestore.instance.collection('games').doc(guestId).get();
+        await FirebaseFirestore.instance.collection('users').doc(guestId).get();
 
     setState(() {
-      hostUsername = hostDoc.data()?['username'] ?? 'Player X';
-      guestUsername = guestDoc.data()?['username'] ?? 'Player O';
+      hostUsername =
+          hostDoc.exists
+              ? (hostDoc.data()?['username'] as String?) ?? 'Player X'
+              : 'Waiting...';
+      guestUsername =
+          guestDoc.exists
+              ? (guestDoc.data()?['username'] as String?) ?? 'Player O'
+              : 'Waiting...';
     });
   }
 
@@ -91,9 +97,11 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
           final isGameOver = data['isGameOver'] ?? false;
           final hostId = data['hostId'];
           final guestId = data['guestId'];
+          final hostScore = data['hostScore'] ?? 0;
+          final guestScore = data['guestScore'] ?? 0;
 
           //fetch Usernames when room loads
-          if (hostUsername == '' || guestUsername == '') {
+          if ((hostUsername == '' || guestUsername == '') && guestId != null) {
             _loadUsernames(hostId, guestId);
           }
 
@@ -141,8 +149,11 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text('Player X', style: customfontwhite),
-                              Text('0', style: customfontwhite),
+                              Text(hostUsername, style: customfontwhite),
+                              Text(
+                                hostScore.toString(),
+                                style: customfontwhite,
+                              ),
                             ],
                           ),
                           SizedBox(width: 30),
@@ -150,8 +161,11 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text('Player O', style: customfontwhite),
-                              Text('0', style: customfontwhite),
+                              Text(guestUsername, style: customfontwhite),
+                              Text(
+                                guestScore.toString(),
+                                style: customfontwhite,
+                              ),
                             ],
                           ),
                         ],
@@ -166,7 +180,16 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                         itemCount: 9,
                         itemBuilder: (context, index) {
                           return GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              _makeMove(
+                                index,
+                                board,
+                                currentTurn,
+                                hostId,
+                                guestId,
+                                isGameOver,
+                              );
+                            },
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Appcolor.secondaryMulti,
@@ -181,10 +204,13 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                                 child: Padding(
                                   padding: const EdgeInsets.only(bottom: 10.0),
                                   child: Text(
-                                    'X',
+                                    board[index],
                                     style: GoogleFonts.coiny(
                                       textStyle: TextStyle(
-                                        color: Appcolor.primaryColor,
+                                        color:
+                                            board[index] == 'X'
+                                                ? Appcolor.primaryMulti
+                                                : Colors.red,
                                         fontSize: 65,
                                       ),
                                     ),
@@ -203,7 +229,7 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
-                              Text('Player X Wins', style: customfontwhite),
+                              Text(statusText, style: customfontwhite),
 
                               SizedBox(height: 20),
 
@@ -215,7 +241,9 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                                     vertical: 16,
                                   ),
                                 ),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  await _gameService.resetGame(widget.roomId);
+                                },
                                 child: Text(
                                   'Play Again!',
                                   style: TextStyle(
@@ -231,7 +259,11 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                                   IconButton(
                                     iconSize: 50,
                                     color: Colors.white,
-                                    onPressed: () {},
+                                    onPressed: () async {
+                                      await _gameService.restartGame(
+                                        widget.roomId,
+                                      );
+                                    },
                                     icon: Icon(Icons.restart_alt_rounded),
                                   ),
                                   IconButton(

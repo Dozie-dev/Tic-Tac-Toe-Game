@@ -248,6 +248,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     await authService.value.createAccount(
                                       email: emailController.text,
                                       password: passwordController.text,
+                                      username: usernameController.text,
                                     );
                                     await authService.value.updateUsername(
                                       username: usernameController.text,

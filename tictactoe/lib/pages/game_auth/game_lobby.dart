@@ -18,8 +18,8 @@ class _GameLobbyState extends State<GameLobby> {
     final TextEditingController roomIdController = TextEditingController();
     bool isLoading = false;
 
-    Future<void> _joinGame() async {
-      final roomId = roomIdController.text.trim();
+    Future<void> joinGame() async {
+      final roomId = roomIdController.text;
       final guestId = FirebaseAuth.instance.currentUser?.uid;
 
       if (roomId.isEmpty || guestId == null) {
@@ -102,7 +102,7 @@ class _GameLobbyState extends State<GameLobby> {
                     SizedBox(
                       width: 250,
                       child: ElevatedButton(
-                        onPressed: isLoading ? null : _joinGame,
+                        onPressed: isLoading ? null : joinGame,
 
                         child:
                             isLoading

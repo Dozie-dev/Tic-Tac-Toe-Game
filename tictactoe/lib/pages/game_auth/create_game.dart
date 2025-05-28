@@ -19,7 +19,7 @@ class _CreateGameState extends State<CreateGame> {
   bool isLoading = false;
   StreamSubscription<DocumentSnapshot>? gameSubscription;
 
-  Future<void> _createGame() async {
+  Future<void> createGame() async {
     setState(() => isLoading = true);
     try {
       final hostId = FirebaseAuth.instance.currentUser!.uid;
@@ -57,7 +57,7 @@ class _CreateGameState extends State<CreateGame> {
   @override
   void initState() {
     super.initState();
-    _createGame(); // Create game on page load
+    createGame(); // Create game on page load
   }
 
   @override
