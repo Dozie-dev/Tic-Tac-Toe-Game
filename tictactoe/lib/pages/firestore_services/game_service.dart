@@ -28,8 +28,8 @@ class GameService {
 
       await docRef.set({
         'roomId': roomId,
-        'playerX': hostId,
-        'playerO': null,
+        'hostId': hostId,
+        'guestId': null,
         'hostScore': 0,
         'guestScore': 0,
         'hostUsername': hostUsername,
@@ -59,7 +59,7 @@ class GameService {
       }
 
       final data = doc.data();
-      if (data == null || data['playerO'] != null) {
+      if (data == null || data['guestId'] != null) {
         throw Exception('Room is Full');
       }
 
@@ -68,7 +68,7 @@ class GameService {
       final guestUsername = userDoc.data()?['username'] ?? 'Player O';
 
       await docRef.update({
-        'playerO': guestId,
+        'guestId': guestId,
         'guestUsername': guestUsername,
         'joinedAt': FieldValue.serverTimestamp(),
       });
@@ -115,11 +115,11 @@ class GameService {
     if (winner != '') {
       final isHostWinner =
           (winner == 'X' &&
-              data['playerX'] != null &&
-              data['playerX'] == data['playerX']) ||
+              data['hostId'] != null &&
+              data['hostId'] == data['hostId']) ||
           (winner == 'O' &&
-              data['playerO'] != null &&
-              data['playerO'] == data['playerX']);
+              data['guestId'] != null &&
+              data['guestId'] == data['hostId']);
 
       final scoreKey = isHostWinner ? 'hostScore' : 'guestScore';
       updates[scoreKey] = (data[scoreKey] ?? 0) + 1;

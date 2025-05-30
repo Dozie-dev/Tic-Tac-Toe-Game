@@ -9,8 +9,13 @@ import 'package:tictactoe/pages/user_auth/profile_page.dart';
 
 class MultiplayerPage extends StatefulWidget {
   final String roomId;
+  final String hostId;
 
-  const MultiplayerPage({super.key, required this.roomId});
+  const MultiplayerPage({
+    super.key,
+    required this.roomId,
+    required this.hostId,
+  });
 
   @override
   State<MultiplayerPage> createState() => _MultiplayerPageState();
@@ -34,21 +39,29 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
     _gameStream = _gameService.streamGameRoom(widget.roomId);
   }
 
-  Future<void> _loadUsernames(String hostId, String guestId) async {
+  Future<void> _loadUsernames(String hostId, String? guestId) async {
     final hostDoc =
         await FirebaseFirestore.instance.collection('users').doc(hostId).get();
-    final guestDoc =
-        await FirebaseFirestore.instance.collection('users').doc(guestId).get();
+
+    String guestName = 'Waiting...';
+    if (guestId != null && guestId.isNotEmpty) {
+      final guestDoc =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(guestId)
+              .get();
+      guestName =
+          guestDoc.exists
+              ? (guestDoc.data()?['username'] ?? 'Player O')
+              : 'Waiting...';
+    }
 
     setState(() {
       hostUsername =
           hostDoc.exists
-              ? (hostDoc.data()?['username'] as String?) ?? 'Player X'
-              : 'Waiting...';
-      guestUsername =
-          guestDoc.exists
-              ? (guestDoc.data()?['username'] as String?) ?? 'Player O'
-              : 'Waiting...';
+              ? (hostDoc.data()?['username'] ?? 'Player X')
+              : 'Player X';
+      guestUsername = guestName;
     });
   }
 
@@ -146,27 +159,43 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(hostUsername, style: customfontwhite),
-                              Text(
-                                hostScore.toString(),
-                                style: customfontwhite,
-                              ),
-                            ],
+                          SizedBox(
+                            width: 150,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  hostUsername.isNotEmpty
+                                      ? hostUsername
+                                      : 'Player X',
+                                  style: customfontwhite,
+                                ),
+                                Text(
+                                  hostScore.toString(),
+                                  style: customfontwhite,
+                                ),
+                              ],
+                            ),
                           ),
                           SizedBox(width: 30),
 
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(guestUsername, style: customfontwhite),
-                              Text(
-                                guestScore.toString(),
-                                style: customfontwhite,
-                              ),
-                            ],
+                          SizedBox(
+                            width: 150,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  guestUsername.isNotEmpty
+                                      ? guestUsername
+                                      : 'Player O',
+                                  style: customfontwhite,
+                                ),
+                                Text(
+                                  guestScore.toString(),
+                                  style: customfontwhite,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),

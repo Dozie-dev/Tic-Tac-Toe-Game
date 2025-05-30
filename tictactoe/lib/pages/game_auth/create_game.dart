@@ -47,7 +47,10 @@ class _CreateGameState extends State<CreateGame> {
           Navigator.pushReplacementNamed(
             context,
             '/multiplayer',
-            arguments: roomId,
+            arguments: {
+              'roomId': roomId,
+              'hostId': FirebaseAuth.instance.currentUser!.uid,
+            },
           );
         }
       }
@@ -117,7 +120,7 @@ class _CreateGameState extends State<CreateGame> {
 
                         SelectableText(
                           roomId!,
-                          style: GoogleFonts.coiny(
+                          style: GoogleFonts.openSans(
                             textStyle: TextStyle(
                               color: Colors.white,
                               fontSize: 25,

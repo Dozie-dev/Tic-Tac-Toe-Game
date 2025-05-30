@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,7 +34,29 @@ class _GameLobbyState extends State<GameLobby> {
 
       try {
         await GameService().joinGame(roomId, guestId);
-        Navigator.pushNamed(context, '/multiplayer', arguments: roomId);
+
+        // Fetch hostId from Firestore document
+        final gameDoc =
+            await FirebaseFirestore.instance
+                .collection('games')
+                .doc(roomId)
+                .get();
+
+        if (!gameDoc.exists) {
+          throw Exception('Game room not found');
+        }
+
+        final hostId = gameDoc.data()?['hostId'] as String?;
+
+        if (hostId == null) {
+          throw Exception('hostId not found');
+        }
+
+        Navigator.pushNamed(
+          context,
+          '/multiplayer',
+          arguments: {'roomId': roomId, 'hostId': hostId},
+        );
       } catch (e) {
         ScaffoldMessenger.of(
           context,
