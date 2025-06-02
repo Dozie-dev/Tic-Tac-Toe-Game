@@ -70,84 +70,92 @@ class _GameLobbyState extends State<GameLobby> {
       backgroundColor: Colors.white70,
       body: Stack(
         children: [
-          Center(
-            child: Container(
-              height: 270,
-              width: 350,
-              decoration: BoxDecoration(
-                color: Appcolor.primaryColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Multiplayer Lobby',
-                      style: GoogleFonts.coiny(
-                        textStyle: TextStyle(color: Colors.white, fontSize: 35),
-                      ),
-                    ),
-
-                    SizedBox(height: 20),
-                    SizedBox(
-                      width: 250,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CreateGame(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          'Create Game',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(height: 20),
-                    SizedBox(
-                      width: 250,
-                      child: TextFormField(
-                        controller: roomIdController,
-                        decoration: InputDecoration(
-                          hintText: 'Enter Room ID',
-                          filled: true,
-                          fillColor: Colors.white70,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(
-                      width: 250,
-                      child: ElevatedButton(
-                        onPressed: isLoading ? null : joinGame,
-
-                        child:
-                            isLoading
-                                ? const CircularProgressIndicator()
-                                : const Text(
-                                  'Join Game',
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          //  Background image only at the bottom
           Positioned(
-            bottom: 35,
+            bottom: 0,
             left: 0,
             right: 0,
             child: Opacity(
               opacity: 0.5,
               child: Image.asset('assets/images/backpicture.png', width: 150),
+            ),
+          ),
+          Positioned.fill(
+            child: Center(
+              child: Container(
+                height: 270,
+                width: 350,
+                decoration: BoxDecoration(
+                  color: Appcolor.primaryColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Multiplayer Lobby',
+                        style: GoogleFonts.coiny(
+                          textStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 35,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 20),
+                      SizedBox(
+                        width: 250,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CreateGame(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'Create Game',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 20),
+                      SizedBox(
+                        width: 250,
+                        child: TextFormField(
+                          controller: roomIdController,
+                          decoration: InputDecoration(
+                            hintText: 'Enter Room ID',
+                            filled: true,
+                            fillColor: Colors.white70,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(
+                        width: 250,
+                        child: ElevatedButton(
+                          onPressed: isLoading ? null : joinGame,
+
+                          child:
+                              isLoading
+                                  ? const CircularProgressIndicator()
+                                  : const Text(
+                                    'Join Game',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ],

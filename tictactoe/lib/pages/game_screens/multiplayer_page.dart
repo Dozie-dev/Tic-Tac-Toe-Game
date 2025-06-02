@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tictactoe/pages/firestore_services/game_service.dart';
 import 'package:tictactoe/pages/tools/app_loading.dart';
 import 'package:tictactoe/pages/user_auth/profile_page.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class MultiplayerPage extends StatefulWidget {
   final String roomId;
@@ -32,11 +33,40 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
 
   String hostUsername = '';
   String guestUsername = '';
+  bool isPlaying = true;
 
   @override
   void initState() {
     super.initState();
     _gameStream = _gameService.streamGameRoom(widget.roomId);
+    _audioPlayer = AudioPlayer();
+    _playMusic();
+  }
+
+  // Audio Player -- Background sound
+  late AudioPlayer _audioPlayer;
+
+  void _playMusic() async {
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    await _audioPlayer.play(AssetSource('audio/backgroundsound2.flac'));
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.stop();
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  void toggleMusic() {
+    if (isPlaying) {
+      _audioPlayer.pause();
+    } else {
+      _audioPlayer.resume();
+    }
+    setState(() {
+      isPlaying = !isPlaying;
+    });
   }
 
   Future<void> _loadUsernames(String hostId, String? guestId) async {
@@ -140,14 +170,31 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
               Positioned(
                 top: 30,
                 left: 30,
-                child: IconButton.filled(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfilePage()),
-                    );
-                  },
-                  icon: Icon(Icons.person_2),
+                child: Row(
+                  children: [
+                    IconButton.filled(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfilePage(),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.person_2),
+                    ),
+                    IconButton.filled(
+                      onPressed: () {
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => ProfilePage(),
+                        //   ),
+                        // );
+                      },
+                      icon: Icon(Icons.settings),
+                    ),
+                  ],
                 ),
               ),
               Padding(
@@ -298,10 +345,11 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                                   IconButton(
                                     iconSize: 50,
                                     color: Colors.white,
-                                    onPressed: () {},
+                                    onPressed: toggleMusic,
                                     icon: Icon(
-                                      Icons.volume_up_rounded,
-                                      // : Icons.volume_off_rounded,
+                                      isPlaying
+                                          ? Icons.volume_up_rounded
+                                          : Icons.volume_off_rounded,
                                     ),
                                   ),
                                 ],

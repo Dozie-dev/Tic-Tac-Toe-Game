@@ -300,7 +300,6 @@ class _LandingPageState extends State<LandingPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Image.asset('assets/icons/close.png', width: 40),
                           Text(
                             playerX.isEmpty ? 'Player X' : playerX,
                             style: customFontWhite,
@@ -317,7 +316,6 @@ class _LandingPageState extends State<LandingPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Image.asset('assets/icons/open.png', width: 40),
                           Text(
                             playerO.isEmpty ? 'Player O' : playerO,
                             style: customFontWhite,
