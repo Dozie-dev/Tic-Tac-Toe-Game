@@ -454,7 +454,6 @@ class _LandingPageState extends State<LandingPage> {
     }
 
     setState(() {
-      // ignore: unrelated_type_equality_checks
       if (oturn && displayXO[index] == '') {
         displayXO[index] = 'X';
         filledboxes++;
@@ -470,87 +469,45 @@ class _LandingPageState extends State<LandingPage> {
 
   void checkwinner() {
     winningindexes.clear();
-    //1st Row
-    if (displayXO[0] == displayXO[1] &&
-        displayXO[0] == displayXO[2] &&
-        displayXO[0] != '') {
-      setState(() {
-        winningindexes = [0, 1, 2];
-        results = 'Player ${displayXO[0]} Wins!';
-        updateScore(displayXO[0]);
-      });
+
+    String getPlayerName(String symbol) {
+      if (symbol == 'X') {
+        return playerX.isNotEmpty ? playerX : 'Player X';
+      } else if (symbol == 'O') {
+        return playerO.isNotEmpty ? playerO : 'Player O';
+      }
+      return 'Player';
     }
-    //2nd Row
-    if (displayXO[3] == displayXO[4] &&
-        displayXO[3] == displayXO[5] &&
-        displayXO[3] != '') {
-      setState(() {
-        winningindexes = [3, 4, 5];
-        results = 'Player ${displayXO[3]} Wins!';
-        updateScore(displayXO[3]);
-      });
+
+    List<List<int>> winPatterns = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [6, 4, 2],
+    ];
+
+    for (var pattern in winPatterns) {
+      int a = pattern[0];
+      int b = pattern[1];
+      int c = pattern[2];
+
+      if (displayXO[a] != '' &&
+          displayXO[a] == displayXO[b] &&
+          displayXO[a] == displayXO[c]) {
+        setState(() {
+          winningindexes = [a, b, c];
+          results = "${getPlayerName(displayXO[a])} wins!";
+          updateScore(displayXO[a]);
+        });
+        return;
+      }
     }
-    //3rd Row
-    if (displayXO[6] == displayXO[7] &&
-        displayXO[6] == displayXO[8] &&
-        displayXO[6] != '') {
-      setState(() {
-        winningindexes = [6, 7, 8];
-        results = 'Player${displayXO[6]}Wins!';
-        updateScore(displayXO[6]);
-      });
-    }
-    //1st Column
-    if (displayXO[0] == displayXO[3] &&
-        displayXO[0] == displayXO[6] &&
-        displayXO[0] != '') {
-      setState(() {
-        winningindexes = [0, 3, 6];
-        results = 'Player ${displayXO[0]} Wins!';
-        updateScore(displayXO[0]);
-      });
-    }
-    //2nd Column
-    if (displayXO[1] == displayXO[4] &&
-        displayXO[1] == displayXO[7] &&
-        displayXO[1] != '') {
-      setState(() {
-        winningindexes = [1, 4, 7];
-        results = 'Player ${displayXO[1]} Wins!';
-        updateScore(displayXO[1]);
-      });
-    }
-    //3rd Column
-    if (displayXO[2] == displayXO[5] &&
-        displayXO[2] == displayXO[8] &&
-        displayXO[2] != '') {
-      setState(() {
-        winningindexes = [2, 5, 8];
-        results = 'Player ${displayXO[2]} Wins!';
-        updateScore(displayXO[2]);
-      });
-    }
-    //1st Diagonal
-    if (displayXO[0] == displayXO[4] &&
-        displayXO[0] == displayXO[8] &&
-        displayXO[0] != '') {
-      setState(() {
-        winningindexes = [0, 4, 8];
-        results = 'Player ${displayXO[0]}Wins!';
-        updateScore(displayXO[0]);
-      });
-    }
-    //2nd Diagonal
-    if (displayXO[6] == displayXO[4] &&
-        displayXO[6] == displayXO[2] &&
-        displayXO[6] != '') {
-      setState(() {
-        winningindexes = [6, 4, 2];
-        results = 'Player${displayXO[6]}Wins!';
-        updateScore(displayXO[6]);
-      });
-    }
-    if (!winnerfound && filledboxes == 9) {
+
+    if (filledboxes == 9) {
       setState(() {
         results = 'Nobody Wins!';
       });

@@ -35,7 +35,7 @@ class _GameLobbyState extends State<GameLobby> {
       try {
         await GameService().joinGame(roomId, guestId);
 
-        // Fetch hostId from Firestore document
+        // Fetch game from Firestore document
         final gameDoc =
             await FirebaseFirestore.instance
                 .collection('games')
@@ -52,10 +52,23 @@ class _GameLobbyState extends State<GameLobby> {
           throw Exception('hostId not found');
         }
 
+        //  Fetch guest username from Firestore
+        final userDoc =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(guestId)
+                .get();
+
+        final guestUsername =
+            userDoc.exists && userDoc.data()?['username'] != null
+                ? userDoc['username'] as String
+                : 'Waiting...';
+
+        // Navigate to the multiplayer page
         Navigator.pushNamed(
           context,
           '/multiplayer',
-          arguments: {'roomId': roomId, 'hostId': hostId},
+          arguments: {'roomId': roomId, 'hostId': hostId, 'guestUsername': guestUsername},
         );
       } catch (e) {
         ScaffoldMessenger.of(

@@ -11,11 +11,13 @@ import 'package:audioplayers/audioplayers.dart';
 class MultiplayerPage extends StatefulWidget {
   final String roomId;
   final String hostId;
+  final String guestUsername;
 
   const MultiplayerPage({
     super.key,
     required this.roomId,
     required this.hostId,
+    required this.guestUsername,
   });
 
   @override
@@ -34,6 +36,7 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
   String hostUsername = '';
   String guestUsername = '';
   bool isPlaying = true;
+  bool hasFetchedUsernames = false;
 
   @override
   void initState() {
@@ -70,28 +73,27 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
   }
 
   Future<void> _loadUsernames(String hostId, String? guestId) async {
+    if (hasFetchedUsernames) return;
+
     final hostDoc =
         await FirebaseFirestore.instance.collection('users').doc(hostId).get();
-
     String guestName = 'Waiting...';
+
     if (guestId != null && guestId.isNotEmpty) {
       final guestDoc =
           await FirebaseFirestore.instance
               .collection('users')
               .doc(guestId)
               .get();
-      guestName =
-          guestDoc.exists
-              ? (guestDoc.data()?['username'] ?? 'Player O')
-              : 'Waiting...';
+      if (guestDoc.exists) {
+        guestName = guestDoc.data()?['username'] ?? 'Player O';
+      }
     }
 
     setState(() {
-      hostUsername =
-          hostDoc.exists
-              ? (hostDoc.data()?['username'] ?? 'Player X')
-              : 'Player X';
+      hostUsername = hostDoc.data()?['username'] ?? 'Player X';
       guestUsername = guestName;
+      hasFetchedUsernames = true;
     });
   }
 
@@ -144,7 +146,7 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
           final guestScore = data['guestScore'] ?? 0;
 
           //fetch Usernames when room loads
-          if ((hostUsername == '' || guestUsername == '') && guestId != null) {
+          if (!hasFetchedUsernames && guestId != null) {
             _loadUsernames(hostId, guestId);
           }
 
@@ -206,42 +208,48 @@ class _MultiplayerPageState extends State<MultiplayerPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(
-                            width: 150,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  hostUsername.isNotEmpty
-                                      ? hostUsername
-                                      : 'Player X',
-                                  style: customfontwhite,
-                                ),
-                                Text(
-                                  hostScore.toString(),
-                                  style: customfontwhite,
-                                ),
-                              ],
+                          SingleChildScrollView(
+                            physics: BouncingScrollPhysics(),
+                            child: SizedBox(
+                              width: 150,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    hostUsername.isNotEmpty
+                                        ? hostUsername
+                                        : 'Player X',
+                                    style: customfontwhite,
+                                  ),
+                                  Text(
+                                    hostScore.toString(),
+                                    style: customfontwhite,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           SizedBox(width: 30),
 
-                          SizedBox(
-                            width: 150,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  guestUsername.isNotEmpty
-                                      ? guestUsername
-                                      : 'Player O',
-                                  style: customfontwhite,
-                                ),
-                                Text(
-                                  guestScore.toString(),
-                                  style: customfontwhite,
-                                ),
-                              ],
+                          SingleChildScrollView(
+                            physics: BouncingScrollPhysics(),
+                            child: SizedBox(
+                              width: 150,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    guestUsername.isNotEmpty
+                                        ? guestUsername
+                                        : 'Player O',
+                                    style: customfontwhite,
+                                  ),
+                                  Text(
+                                    guestScore.toString(),
+                                    style: customfontwhite,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],

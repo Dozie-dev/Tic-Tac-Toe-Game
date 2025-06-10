@@ -43,6 +43,8 @@ class _CreateGameState extends State<CreateGame> {
       if (snapshot.exists) {
         final data = snapshot.data();
         if (data != null && data['guestId'] != null) {
+          final guestUsername = data['guestUsername'] ?? 'Guest';
+          
           // Guest has joined, navigate to multiplayer page
           Navigator.pushReplacementNamed(
             context,
@@ -50,6 +52,7 @@ class _CreateGameState extends State<CreateGame> {
             arguments: {
               'roomId': roomId,
               'hostId': FirebaseAuth.instance.currentUser!.uid,
+              'guestUsername': guestUsername,
             },
           );
         }

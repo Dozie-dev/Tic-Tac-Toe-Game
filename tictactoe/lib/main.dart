@@ -31,6 +31,8 @@ class MyApp extends StatelessWidget {
           return MultiplayerPage(
             roomId: args['roomId'],
             hostId: args['hostId'],
+            guestUsername: args['guestUsername'],
+            
           );
         },
       },
